@@ -1,3 +1,5 @@
+const User = require('../models/User');
+
 exports.home = (req, res) => {
   res.render('home-guest')
 }
@@ -11,5 +13,11 @@ exports.logout = (req, res) => {
 }
 
 exports.register = (req, res) => {
-  res.send("Test 1 2 3")
+  let user = new User(req.body);
+  user.register();
+  if(user.errors.length) {
+    res.send(user.errors)
+  } else {
+    res.send("Everything is ok.")
+  }
 }
