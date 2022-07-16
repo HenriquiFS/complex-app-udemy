@@ -1,14 +1,21 @@
 const User = require('../models/User');
 
 exports.home = (req, res) => {
-  res.render('home-guest')
+  if(req.session.user) {
+    res.render('home-dashboard', {username: req.session.user.username})
+  } else {
+    res.render('home-guest')
+  }
 }
 
 exports.login = (req, res) => {
   let user = new User(req.body);
-  user.login(function(result) {
+  user.login().then(function(result) {
+    req.session.user = {favColor: "blue", username: user.data.username}
     res.send(result)
-  })
+  }).catch(function(e) {
+    res.send(e)
+  });
 }
 
 exports.logout = (req, res) => {
