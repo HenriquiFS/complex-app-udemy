@@ -2,6 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
+const markdown = require('marked');
+const sanitizeHTML = require('sanitize-html');
 const app = express();
 const router = require('./router')
 
@@ -22,6 +24,13 @@ let sessionOptions = session({
 app.use(sessionOptions)
 app.use(flash())
 app.use(function(req, res, next) {
+  res.locals.filterUserHTML = function(content) {
+    return sanitizeHTML(markdown.parse(content), {allowedTags: ['p','br','ul','ol','li','strong','bold','i','em','h1','h2'], allowedAttributes: {}})
+  }
+
+  res.locals.errors = req.flash("errors")
+  res.locals.success = req.flash("success")
+
   if(req.session.user) {
     req.visitorId = req.session.user._id;
   } else {
