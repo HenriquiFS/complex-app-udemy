@@ -11,6 +11,10 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
+app.use('/api', require('./router-api'))
+
 let sessionOptions = session({
   secret: process.env.SESSION_SECRET,
   store: MongoStore.create({ client: require('./db') }),
@@ -41,8 +45,7 @@ app.use(function(req, res, next) {
   res.locals.user = req.session.user
   next()
 })
-app.use(express.urlencoded({extended: false}))
-app.use(express.json())
+
 app.use(express.static('public'))
 app.set('views', 'views')
 app.set('view engine', 'ejs')
